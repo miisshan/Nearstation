@@ -2,6 +2,7 @@ package edu.eec.nearcontroller;
 
 import edu.eec.nearmodel.Edge;
 import edu.eec.nearmodel.NearGraph;
+
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -16,7 +17,7 @@ public class BellmanFordAlgorithm implements Algorithm {
          * Initialize the distances from source to all other vertices
          * with the very large value.
          */
-        Map < String, Double > distances = new HashMap < > ();
+        Map<String, Double> distances = new HashMap<>();
         nearGraph.vertices().forEach(vertex -> distances.put(vertex.code(), Double.MAX_VALUE));
         /**
          * Initialize the distance to source vertex, 0.0.
@@ -26,13 +27,13 @@ public class BellmanFordAlgorithm implements Algorithm {
         /**
          * All edges.
          */
-        Set < Edge > edges = nearGraph.edges();
+        Set<Edge> edges = nearGraph.edges();
 
         /**
          * Perform relaxing edges.
          */
         IntStream.range(0, nearGraph.countVertices()).forEach(i -> {
-            for (Edge e: edges) {
+            for (Edge e : edges) {
                 String uCode = e.getSource();
                 String vCode = e.getDestination();
                 Double weight = e.getWeight();
@@ -44,7 +45,7 @@ public class BellmanFordAlgorithm implements Algorithm {
             }
         });
 
-        for (Edge e: edges) {
+        for (Edge e : edges) {
             String uCode = e.getSource();
             String vCode = e.getDestination();
             Double weight = e.getWeight();

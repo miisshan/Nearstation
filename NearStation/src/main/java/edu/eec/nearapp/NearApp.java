@@ -1,4 +1,6 @@
 package edu.eec.nearapp;
+
+import edu.eec.nearcontroller.Algorithm;
 import edu.eec.nearcontroller.BellmanFordAlgorithm;
 import edu.eec.nearcontroller.Result;
 import edu.eec.nearcontroller.Solution;
@@ -15,10 +17,10 @@ import java.util.*;
 public class NearApp {
     public static void main(String[] args) {
         DbFunctions db = new DbFunctions(Config.url, Config.userName, Config.password, Config.dbName);
-        List < Station > stations = db.fetchStations(db.getConnection(), Config.tableName);
-        List < Vertex > vertices = new ArrayList < > ();
+        List<Station> stations = db.fetchStations(db.getConnection(), Config.tableName);
+        List<Vertex> vertices = new ArrayList<>();
 
-        for (Station station: stations) {
+        for (Station station : stations) {
             int id = station.getId();
             double latitude = station.getLatitude();
             double longitude = station.getLongitude();
@@ -47,7 +49,7 @@ public class NearApp {
                 "Dhobighat",
                 "Kuleshwor",
                 "Khasibazar",
-                "Thapathali"
+                "Thapathali",
         };
 
         Vertex[] verticesArray = new Vertex[locationStrings.length];
@@ -57,14 +59,14 @@ public class NearApp {
             verticesArray[i] = VertexUtils.getVertexByLocationString(vertices, locationStrings[i]);
         }
 
-        Map < String, Set < String >> neighborsMap = new HashMap < > ();
+        Map<String, Set<String>> neighborsMap = new HashMap<>();
 
         // Define the neighbors for each vertex
         {
             addNeighbor(neighborsMap, "Jawlakhel", "Manbhawan", "Ekantakuna", "Pulchowk");
             addNeighbor(neighborsMap, "Manbhawan", "Kumaripati");
             addNeighbor(neighborsMap, "Kumaripati", "Lagankhel", "Manbhawan");
-            addNeighbor(neighborsMap, "Lagankhel", "Satdobato", "Mahalaxmi");
+            addNeighbor(neighborsMap, "Lagankhel", "Satdobato", "Mahalaxmi", "Kumaripati");
             addNeighbor(neighborsMap, "Satdobato", "Lagankhel", "Mahalaxmi");
             addNeighbor(neighborsMap, "Pulchowk", "Jwagal", "Jawlakhel");
             addNeighbor(neighborsMap, "Jwagal", "Kupondole", "Pulchowk");
@@ -77,9 +79,9 @@ public class NearApp {
 
         // Print the vertices and their neighbors
         System.out.println("Vertex\t\tNeighbors");
-        for (String vertex: locationStrings) {
+        for (String vertex : locationStrings) {
             System.out.print(vertex + "\t\t");
-            Set < String > neighbors = neighborsMap.get(vertex);
+            Set<String> neighbors = neighborsMap.get(vertex);
             if (neighbors != null && !neighbors.isEmpty()) {
                 System.out.println(neighbors);
             } else {
@@ -87,19 +89,23 @@ public class NearApp {
             }
         }
 
-        List < Edge > edges = new ArrayList < > ();
+        List<Edge> edges = new ArrayList<>();
         int counter = 1;
         NearGraph graph = NearGraph.create();
+        System.out.println("Enter your location");
+        Scanner rootInput = new Scanner(System.in);
+        String root = rootInput.nextLine();
+
 
         // Add vertices to the graph
-        for (Vertex vertex: verticesArray) {
+        for (Vertex vertex : verticesArray) {
             graph.addVertex(vertex);
         }
 
         // Add edges to the graph
-        for (Map.Entry < String, Set < String >> entry: neighborsMap.entrySet()) {
-            String sourceVertex = entry.getKey();
-            Set < String > neighbors = entry.getValue();
+        for (Map.Entry<String, Set<String>> entry : neighborsMap.entrySet()) {
+            String sourceVertex = root;
+            Set<String> neighbors = entry.getValue();
 
             // Find the source vertex in the vertices array
             Vertex source = VertexUtils.getVertexByLocationString(vertices, sourceVertex);
@@ -108,7 +114,7 @@ public class NearApp {
                 continue;
             }
 
-            for (String neighbor: neighbors) {
+            for (String neighbor : neighbors) {
                 // Find the neighbor vertex in the vertices array
                 Vertex destination = VertexUtils.getVertexByLocationString(vertices, neighbor);
                 if (destination == null) {
@@ -131,24 +137,31 @@ public class NearApp {
         }
 
         // Set the root vertex
-        graph.setRoot(VertexUtils.getVertexByLocationString(vertices, "Hattiban"));
+        graph.setRoot(VertexUtils.getVertexByLocationString(vertices, root));
 
         // Print the graph
         System.out.println(graph);
 
+        Algorithm algorithm = new BellmanFordAlgorithm();
+
+        Solution solution = algorithm.execute(graph);
+        Result result = solution.minimumDistance();
+        System.out.println("Result: \n" + result.toString());
+
     }
 
-    private static void addNeighbor(Map < String, Set < String >> neighborsMap, String vertex, String...neighbors) {
-        Set < String > vertexNeighbors = neighborsMap.getOrDefault(vertex, new HashSet < > ());
+    private static void addNeighbor(Map<String, Set<String>> neighborsMap, String vertex, String... neighbors) {
+        Set<String> vertexNeighbors = neighborsMap.getOrDefault(vertex, new HashSet<>());
         vertexNeighbors.addAll(Arrays.asList(neighbors));
         neighborsMap.put(vertex, vertexNeighbors);
 
-        for (String neighbor: neighbors) {
-            Set < String > neighborNeighbors = neighborsMap.getOrDefault(neighbor, new HashSet < > ());
+        for (String neighbor : neighbors) {
+            Set<String> neighborNeighbors = neighborsMap.getOrDefault(neighbor, new HashSet<>());
             neighborNeighbors.add(vertex);
             neighborsMap.put(neighbor, neighborNeighbors);
         }
     }
+
     private static int getVertexIndex(Vertex[] vertices, String location) {
         for (int i = 0; i < vertices.length; i++) {
             if (vertices[i].getLocation().equalsIgnoreCase(location)) {
