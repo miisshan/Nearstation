@@ -1,4 +1,7 @@
 package edu.eec.nearapp;
+import edu.eec.nearcontroller.BellmanFordAlgorithm;
+import edu.eec.nearcontroller.Result;
+import edu.eec.nearcontroller.Solution;
 import edu.eec.nearmodel.*;
 import edu.eec.nearutils.RoutingUtils;
 import edu.eec.db.Config;
@@ -119,7 +122,7 @@ public class NearApp {
                         destination.getLat(), destination.getLon());
                 WeightCalculator weightCalculator = new WeightCalculator(distance);
                 double weight = weightCalculator.getWeightByFare();
-                Edge edge = Edge.from(source.code(), "edge" + counter, weight, destination.code());
+                Edge edge = Edge.from(source.code(), source.getLocation() + " to " + destination.getLocation(), weight, destination.code());
 
                 // Add the edge to the graph
                 graph.addEdge(edge);
@@ -154,5 +157,4 @@ public class NearApp {
         }
         return -1; // Handle if vertex with the given location is not found
     }
-
 }
