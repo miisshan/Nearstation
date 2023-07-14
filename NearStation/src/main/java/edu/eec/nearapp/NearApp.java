@@ -17,7 +17,7 @@ import java.util.*;
 public class NearApp {
     public static void main(String[] args) {
         DbFunctions db = new DbFunctions(Config.url, Config.userName, Config.password, Config.dbName);
-        List<Station> stations = db.fetchStations(db.getConnection(), Config.tableName);
+        List<Station> stations = db.fetchStations(db.getConnection(), Config.coordinateTable);
         List<Vertex> vertices = new ArrayList<>();
 
         for (Station station : stations) {
@@ -75,6 +75,7 @@ public class NearApp {
             addNeighbor(neighborsMap, "Thasikhel", "Mahalaxmi", "Ekantakuna");
             addNeighbor(neighborsMap, "Balkhu", "Sanepa", "Kuleshwor", "Khasibazar");
             addNeighbor(neighborsMap, "Kupondole", "Jwagal", "Thapathali");
+
         }
 
         // Print the vertices and their neighbors
@@ -127,7 +128,7 @@ public class NearApp {
                         source.getLat(), source.getLon(),
                         destination.getLat(), destination.getLon());
                 WeightCalculator weightCalculator = new WeightCalculator(distance);
-                double weight = weightCalculator.getWeightByFare();
+                double weight = weightCalculator.getWeightByDistance();
                 Edge edge = Edge.from(source.code(), source.getLocation() + " to " + destination.getLocation(), weight, destination.code());
 
                 // Add the edge to the graph

@@ -14,7 +14,6 @@ public class DbFunctions {
     private final String url;
     private final String userName;
     private final String password;
-
     private final String dbName;
 
     public DbFunctions(String url, String userName, String password, String dbName) {
@@ -66,5 +65,33 @@ public class DbFunctions {
         }
 
         return stations;
+    }
+
+    public static List < Route > fetchRoutes(Connection conn, String table_name){
+        List <Route> routes = new ArrayList<>();
+
+        try{
+            String query = String.format("SELECT * from %s",table_name);
+            Statement statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+
+            while (rs.next()){
+                int id = rs.getInt("id");
+                String routename = rs.getString("Routename");
+                String start = rs.getString("Start");
+                String end = rs.getString("End");
+                //First passing as string, converting it later to array.
+                String routelistString= rs.getString("Routelist");
+                String[] routelist = routelistString.split(",");
+                Route route = new Route(id,routename,start,end,routelist);
+                routes.add(route);
+            }
+            rs.close();
+            statement.close();
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
+        return routes;
     }
 }

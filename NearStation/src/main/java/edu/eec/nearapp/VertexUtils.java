@@ -1,11 +1,11 @@
 package edu.eec.nearapp;
 
+import edu.eec.nearcontroller.Result;
 import edu.eec.nearmodel.Vertex;
 
 import java.util.List;
 
 public class VertexUtils {
-
     public static Vertex getVertexByLocationString(List < Vertex > vertices, String location) {
         for (Vertex vertex: vertices) {
             if (vertex.getLocation().equalsIgnoreCase(location)) {

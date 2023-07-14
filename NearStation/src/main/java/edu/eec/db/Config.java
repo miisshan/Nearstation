@@ -9,9 +9,11 @@ public class Config {
     public static final String userName = "postgres";
     public static final String password = "hello";
 
-    public static final String tableName = "coordinates";
+    public static final String coordinateTable = "coordinates";
+    public static final String routeTable = "routes";
 
 }
 
 
-//        DbFunctions db = new DbFunctions("jdbc:postgresql://localhost:5432/","postgres","hello","geocoordinates");
+//Stored Database login information
+//Sn, Location , Lat , Long

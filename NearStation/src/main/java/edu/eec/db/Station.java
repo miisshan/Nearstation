@@ -1,4 +1,6 @@
 package edu.eec.db;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import edu.eec.nearmodel.Coordinate;
 
 public class Station {
@@ -50,5 +52,18 @@ public class Station {
 
     public Coordinate getCoordinate() {
         return new Coordinate(latitude, longitude);
+    }
+
+    @Override
+    public String toString() {
+        return toJson();
+    }
+
+    /**
+     * To JSON utility
+     **/
+    public String toJson() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this);
     }
 }
